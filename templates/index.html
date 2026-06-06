@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeForge - Developer Tools Suite</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">⚡</span>
+            <span class="nav-title">CodeForge</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-tool="json">JSON</a>
+            <a href="#" class="nav-link" data-tool="regex">Regex</a>
+            <a href="#" class="nav-link" data-tool="hash">Hash</a>
+            <a href="#" class="nav-link" data-tool="base64">Base64</a>
+            <a href="#" class="nav-link" data-tool="url">URL</a>
+            <a href="#" class="nav-link" data-tool="jwt">JWT</a>
+            <a href="#" class="nav-link" data-tool="diff">Diff</a>
+            <a href="#" class="nav-link" data-tool="color">Color</a>
+            <a href="#" class="nav-link" data-tool="lorem">Lorem</a>
+            <a href="#" class="nav-link" data-tool="qr">QR</a>
+        </div>
+        <div class="nav-actions">
+            <button class="btn btn-sm" id="theme-toggle" title="Toggle theme">🌙</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- JSON Formatter -->
+        <section class="tool-section active" id="tool-json">
+            <div class="tool-header">
+                <h2>🗂️ JSON Formatter</h2>
+                <p>Format, minify, and validate JSON</p>
+            </div>
+            <div class="tool-body">
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>Input JSON</label>
+                        <div class="pane-actions">
+                            <button class="btn btn-sm" onclick="pasteFromClipboard('json-input')">📋 Paste</button>
+                            <button class="btn btn-sm" onclick="clearEditor('json-input')">🗑️ Clear</button>
+                        </div>
+                    </div>
+                    <textarea id="json-input" class="code-editor" placeholder='{"key": "value"}' spellcheck="false"></textarea>
+                </div>
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Indent:</label>
+                        <select id="json-indent">
+                            <option value="2">2 spaces</option>
+                            <option value="4">4 spaces</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="formatJSON()">✨ Format</button>
+                    <button class="btn btn-secondary" onclick="minifyJSON()">📦 Minify</button>
+                    <button class="btn btn-secondary" onclick="validateJSON()">✅ Validate</button>
+                </div>
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>Output</label>
+                        <div class="pane-actions">
+                            <button class="btn btn-sm" onclick="copyToClipboard('json-output')">📋 Copy</button>
+                        </div>
+                    </div>
+                    <pre id="json-output" class="code-output" readonly></pre>
+                </div>
+                <div id="json-status" class="status-bar"></div>
+            </div>
+        </section>
+
+        <!-- Regex Tester -->
+        <section class="tool-section" id="tool-regex">
+            <div class="tool-header">
+                <h2>🔍 Regex Tester</h2>
+                <p>Test regular expressions with match highlighting</p>
+            </div>
+            <div class="tool-body">
+                <div class="regex-input-group">
+                    <div class="regex-pattern-row">
+                        <span class="regex-delim">/</span>
+                        <input type="text" id="regex-pattern" class="regex-input" placeholder="pattern" spellcheck="false">
+                        <span class="regex-delim">/</span>
+                        <input type="text" id="regex-flags" class="regex-flags" placeholder="gims" maxlength="6" spellcheck="false">
+                    </div>
+                </div>
+                <div class="editor-pane">
+                    <div class="pane-header"><label>Test String</label></div>
+                    <textarea id="regex-text" class="code-editor" placeholder="Enter text to test..." spellcheck="false"></textarea>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="testRegex()">🔍 Test</button>
+                </div>
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>Matches <span id="regex-count" class="badge">0</span></label>
+                    </div>
+                    <div id="regex-output" class="code-output regex-output"></div>
+                </div>
+                <div id="regex-groups" class="regex-groups"></div>
+            </div>
+        </section>
+
+        <!-- Hash Generator -->
+        <section class="tool-section" id="tool-hash">
+            <div class="tool-header">
+                <h2>🔐 Hash Generator</h2>
+                <p>Generate MD5, SHA1, SHA256, SHA512, bcrypt hashes</p>
+            </div>
+            <div class="tool-body">
+                <div class="editor-pane">
+                    <div class="pane-header"><label>Input Text</label></div>
+                    <textarea id="hash-input" class="code-editor" placeholder="Enter text to hash..." spellcheck="false"></textarea>
+                </div>
+                <div class="controls">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="hash-md5" checked> MD5</label>
+                        <label><input type="checkbox" id="hash-sha1" checked> SHA1</label>
+                        <label><input type="checkbox" id="hash-sha256" checked> SHA256</label>
+                        <label><input type="checkbox" id="hash-sha512" checked> SHA512</label>
+                        <label><input type="checkbox" id="hash-bcrypt"> bcrypt</label>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateHash()">🔐 Generate</button>
+                </div>
+                <div id="hash-output" class="hash-results"></div>
+            </div>
+        </section>
+
+        <!-- Base64 Codec -->
+        <section class="tool-section" id="tool-base64">
+            <div class="tool-header">
+                <h2>🔄 Base64 Codec</h2>
+                <p>Encode and decode Base64 strings</p>
+            </div>
+            <div class="tool-body">
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>Input</label>
+                        <div class="pane-actions">
+                            <button class="btn btn-sm" onclick="pasteFromClipboard('base64-input')">📋 Paste</button>
+                            <button class="btn btn-sm" onclick="clearEditor('base64-input')">🗑️ Clear</button>
+                        </div>
+                    </div>
+                    <textarea id="base64-input" class="code-editor" placeholder="Enter text..." spellcheck="false"></textarea>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="encodeBase64()">⬆️ Encode</button>
+                    <button class="btn btn-secondary" onclick="decodeBase64()">⬇️ Decode</button>
+                </div>
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>Output</label>
+                        <div class="pane-actions">
+                            <button class="btn btn-sm" onclick="copyToClipboard('base64-output')">📋 Copy</button>
+                        </div>
+                    </div>
+                    <pre id="base64-output" class="code-output" readonly></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- URL Codec -->
+        <section class="tool-section" id="tool-url">
+            <div class="tool-header">
+                <h2>🔗 URL Codec</h2>
+                <p>Encode and decode URL strings</p>
+            </div>
+            <div class="tool-body">
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>Input</label>
+                        <div class="pane-actions">
+                            <button class="btn btn-sm" onclick="pasteFromClipboard('url-input')">📋 Paste</button>
+                            <button class="btn btn-sm" onclick="clearEditor('url-input')">🗑️ Clear</button>
+                        </div>
+                    </div>
+                    <textarea id="url-input" class="code-editor" placeholder="Enter text..." spellcheck="false"></textarea>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="encodeURL()">⬆️ Encode</button>
+                    <button class="btn btn-secondary" onclick="decodeURL()">⬇️ Decode</button>
+                </div>
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>Output</label>
+                        <div class="pane-actions">
+                            <button class="btn btn-sm" onclick="copyToClipboard('url-output')">📋 Copy</button>
+                        </div>
+                    </div>
+                    <pre id="url-output" class="code-output" readonly></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- JWT Decoder -->
+        <section class="tool-section" id="tool-jwt">
+            <div class="tool-header">
+                <h2>🎫 JWT Decoder</h2>
+                <p>Decode JWT tokens (header, payload, signature)</p>
+            </div>
+            <div class="tool-body">
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>JWT Token</label>
+                        <div class="pane-actions">
+                            <button class="btn btn-sm" onclick="pasteFromClipboard('jwt-input')">📋 Paste</button>
+                        </div>
+                    </div>
+                    <textarea id="jwt-input" class="code-editor" placeholder="eyJhbGciOiJIUzI1NiIs..." spellcheck="false"></textarea>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="decodeJWT()">🔓 Decode</button>
+                </div>
+                <div class="jwt-sections">
+                    <div class="jwt-section">
+                        <div class="jwt-section-header header-color">
+                            <h3>Header</h3>
+                            <button class="btn btn-sm" onclick="copyToClipboard('jwt-header')">📋</button>
+                        </div>
+                        <pre id="jwt-header" class="code-output jwt-output" readonly></pre>
+                    </div>
+                    <div class="jwt-section">
+                        <div class="jwt-section-header payload-color">
+                            <h3>Payload</h3>
+                            <button class="btn btn-sm" onclick="copyToClipboard('jwt-payload')">📋</button>
+                        </div>
+                        <pre id="jwt-payload" class="code-output jwt-output" readonly></pre>
+                    </div>
+                    <div class="jwt-section">
+                        <div class="jwt-section-header signature-color">
+                            <h3>Signature</h3>
+                        </div>
+                        <pre id="jwt-signature" class="code-output jwt-output" readonly></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diff Checker -->
+        <section class="tool-section" id="tool-diff">
+            <div class="tool-header">
+                <h2>📊 Diff Checker</h2>
+                <p>Compare two texts and see differences</p>
+            </div>
+            <div class="tool-body">
+                <div class="diff-grid">
+                    <div class="editor-pane">
+                        <div class="pane-header"><label>Text 1 (Original)</label></div>
+                        <textarea id="diff-text1" class="code-editor" placeholder="Original text..." spellcheck="false"></textarea>
+                    </div>
+                    <div class="editor-pane">
+                        <div class="pane-header"><label>Text 2 (Modified)</label></div>
+                        <textarea id="diff-text2" class="code-editor" placeholder="Modified text..." spellcheck="false"></textarea>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="checkDiff()">📊 Compare</button>
+                </div>
+                <div class="diff-stats" id="diff-stats"></div>
+                <div class="editor-pane">
+                    <div class="pane-header"><label>Diff Result</label></div>
+                    <div id="diff-output" class="code-output diff-output"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Color Picker -->
+        <section class="tool-section" id="tool-color">
+            <div class="tool-header">
+                <h2>🎨 Color Converter</h2>
+                <p>Convert between HEX, RGB, and HSL color formats</p>
+            </div>
+            <div class="tool-body">
+                <div class="color-input-row">
+                    <input type="color" id="color-picker" value="#6366f1">
+                    <input type="text" id="color-input" class="color-text-input" placeholder="#6366f1 or rgb(99,102,241)" value="#6366f1">
+                    <button class="btn btn-primary" onclick="convertColor()">🎨 Convert</button>
+                </div>
+                <div class="color-preview" id="color-preview"></div>
+                <div class="color-results" id="color-results"></div>
+            </div>
+        </section>
+
+        <!-- Lorem Generator -->
+        <section class="tool-section" id="tool-lorem">
+            <div class="tool-header">
+                <h2>📝 Lorem Ipsum Generator</h2>
+                <p>Generate placeholder text</p>
+            </div>
+            <div class="tool-body">
+                <div class="controls horizontal">
+                    <div class="control-group">
+                        <label>Count:</label>
+                        <input type="number" id="lorem-count" value="3" min="1" max="100">
+                    </div>
+                    <div class="control-group">
+                        <label>Unit:</label>
+                        <select id="lorem-unit">
+                            <option value="paragraphs">Paragraphs</option>
+                            <option value="sentences">Sentences</option>
+                            <option value="words">Words</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateLorem()">📝 Generate</button>
+                </div>
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <label>Generated Text</label>
+                        <div class="pane-actions">
+                            <button class="btn btn-sm" onclick="copyToClipboard('lorem-output')">📋 Copy</button>
+                        </div>
+                    </div>
+                    <pre id="lorem-output" class="code-output" readonly></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- QR Generator -->
+        <section class="tool-section" id="tool-qr">
+            <div class="tool-header">
+                <h2>📱 QR Code Generator</h2>
+                <p>Generate QR codes from text or URLs</p>
+            </div>
+            <div class="tool-body">
+                <div class="editor-pane">
+                    <div class="pane-header"><label>Text / URL</label></div>
+                    <textarea id="qr-input" class="code-editor" placeholder="Enter text or URL..." spellcheck="false"></textarea>
+                </div>
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Size:</label>
+                        <select id="qr-size">
+                            <option value="5">Small</option>
+                            <option value="10" selected>Medium</option>
+                            <option value="15">Large</option>
+                            <option value="20">X-Large</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateQR()">📱 Generate</button>
+                </div>
+                <div class="qr-result" id="qr-result"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>⚡ CodeForge v1.0 — Built with Flask &amp; ❤️ — <a href="https://github.com/mayank-dev-15/codeforge" target="_blank">GitHub</a></p>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+    <script src="/static/app.js"></script>
+</body>
+</html>
